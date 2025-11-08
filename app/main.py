@@ -2,10 +2,10 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-try:  
+try:  # Prefer package-relative import when executed as part of the app package.
     from . import utils
-except ImportError: 
-    import utils  
+except ImportError:  # Fallback for `streamlit run app/main.py` style execution.
+    import utils  # type: ignore
 
 
 st.set_page_config(
@@ -18,6 +18,9 @@ st.title("☀️ Solar Resource Comparison Dashboard")
 st.caption(
     "Interactively explore irradiance and weather metrics across Benin, Sierra Leone, and Togo."
 )
+
+if "uploaded_csvs" not in st.session_state:
+    st.session_state["uploaded_csvs"] = {}
 
 with st.sidebar:
     st.header("Controls")
@@ -52,6 +55,19 @@ with st.sidebar:
         )
 
     st.markdown("---")
+    with st.expander("Upload local CSV overrides", expanded=False):
+        st.write(
+            "If the cleaned datasets are not available in the `data/` directory, upload replacements here."
+        )
+        for country in utils.COUNTRY_FILES.keys():
+            uploaded = st.file_uploader(
+                f"{country}",
+                type="csv",
+                key=f"upload_{country}",
+            )
+            if uploaded is not None:
+                st.session_state["uploaded_csvs"][country] = uploaded
+
     st.subheader("Date filter")
     use_date_filter = st.checkbox(
         "Filter by date range",
@@ -63,8 +79,14 @@ if not selected_countries:
     st.warning("Select at least one country to display the dashboard.")
     st.stop()
 
+uploads = st.session_state.get("uploaded_csvs", {})
+
 with st.spinner("Loading cleaned datasets..."):
-    data = utils.load_country_frames(selected_countries, sample_size=sample_size)
+    data = utils.load_country_frames(
+        selected_countries,
+        sample_size=sample_size,
+        uploads=uploads,
+    )
 
 if data.empty:
     st.error("No data available. Please ensure the cleaned CSVs exist in the data/ directory.")
