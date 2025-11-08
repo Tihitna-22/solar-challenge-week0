@@ -15,35 +15,49 @@ COUNTRY_FILES: Dict[str, Path] = {
 METRIC_COLUMNS: List[str] = ["GHI", "DNI", "DHI", "ModA", "ModB", "Tamb", "RH", "WS"]
 
 
-@st.cache_data(show_spinner=False)
+def get_missing_countries(countries: Iterable[str]) -> List[str]:
+    """Return the subset of countries whose CSV paths do not exist locally."""
+
+    missing: List[str] = []
+    for country in countries:
+        path = COUNTRY_FILES.get(country)
+        if path is None or not path.exists():
+            missing.append(country)
+    return missing
+
+
 def load_country_frames(
     countries: Iterable[str],
     sample_size: Optional[int] = None,
     parse_dates: bool = True,
+    uploads: Optional[Dict[str, "UploadedFile"]] = None,
 ) -> pd.DataFrame:
     """Load and concatenate the cleaned datasets for the selected countries.
 
-    Args:
-        countries: Country labels that need to be loaded.
-        sample_size: Optional number of rows to sample from each country to keep
-            the UI responsive. If ``None`` the full dataset is used.
-        parse_dates: Whether to parse the ``Timestamp`` column as datetime.
-
-    Returns:
-        A concatenated dataframe containing a ``Country`` column for faceting.
+    ``uploads`` can contain ``streamlit.uploaded_file_manager.UploadedFile`` objects which override
+    the on-disk CSVs.
     """
 
     frames: List[pd.DataFrame] = []
     date_cols = ["Timestamp"] if parse_dates else None
+    uploads = uploads or {}
 
     for country in countries:
-        path = COUNTRY_FILES[country]
-        if not path.exists():
-            raise FileNotFoundError(
-                f"Dataset for {country!r} is missing: {path}. Ensure cleaned CSVs are in the data/ directory."
-            )
+        uploaded_file = uploads.get(country)
+        if uploaded_file is not None:
+            uploaded_file.seek(0)
+            df = pd.read_csv(uploaded_file, parse_dates=date_cols)
+            st.info(f"Using uploaded CSV for {country} (rows: {len(df):,}).", icon="📄")
+        else:
+            path = COUNTRY_FILES[country]
+            if not path.exists():
+                st.warning(
+                    f"Dataset for {country} is missing: `{path}`. Upload the cleaned CSV via the sidebar.",
+                    icon="⚠️",
+                )
+                continue
+            df = pd.read_csv(path, parse_dates=date_cols)
 
-        df = pd.read_csv(path, parse_dates=date_cols)
         df["Country"] = country
 
         if sample_size is not None:
