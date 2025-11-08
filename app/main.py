@@ -2,7 +2,11 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from . import utils
+try:  
+    from . import utils
+except ImportError: 
+    import utils  
+
 
 st.set_page_config(
     page_title="Solar Resource Comparison Dashboard",
