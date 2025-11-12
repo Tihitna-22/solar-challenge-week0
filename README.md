@@ -138,8 +138,7 @@ A lightweight GitHub Actions workflow (`.github/workflows/ci.yml`) runs on Pull 
 
 ## Acknowledgements
 
-- Week 0 tutorial facilitators and mentors
-- Solar radiation dataset providers
+- 10 Academy mentors
 - 10 Academy community for support and discussions
 
 For questions or improvements, open an issue or submit a PR. Happy analysing! 🌞
