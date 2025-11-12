@@ -1,40 +1,43 @@
 # Solar Challenge Week 0
 
-This repository contains the code and analysis for the Solar Challenge Week 0, focusing on solar radiation measurement data analysis.
+This repository contains the end-to-end workflow for **Week 0** of the Solar Challenge. It covers local environment setup, country-level exploratory data analysis (EDA), cross-country comparisons, and a bonus Streamlit dashboard for interactive insight sharing.
 
-## Dataset Overview
+---
 
-The data for this week's challenge is extracted and aggregated from Solar Radiation Measurement Data. Each row in the data contains the values for solar radiation, air temperature, relative humidity, barometric pressure, precipitation, wind speed, and wind direction, cleaned and soiled radiance sensor (soiling measurement), and cleaning events.
+## Project Structure
 
-### Data Structure
+```
+├── app/                     # Streamlit dashboard package
+│   ├── __init__.py
+│   ├── main.py              # Main UI logic
+│   └── utils.py             # Data-loading and summarisation helpers
+├── notebooks/               # Jupyter notebooks for country EDAs & comparison
+│   ├── benin_eda.ipynb
+│   ├── sierraleone_eda.ipynb
+│   ├── togo_eda.ipynb
+│   └── compare_countries.ipynb
+├── reports/
+│   └── week0_task_report.txt
+├── scripts/
+│   ├── __init__.py
+│   └── README.md            # Deployment notes for the dashboard
+├── tests/                   # Placeholder for future automated checks
+├── .github/workflows/       # CI configuration
+├── requirements.txt
+└── README.md
+```
 
-- **Timestamp** (yyyy-mm-dd hh:mm): Date and time of each observation
-- **GHI** (W/m²): Global Horizontal Irradiance
-- **DNI** (W/m²): Direct Normal Irradiance
-- **DHI** (W/m²): Diffuse Horizontal Irradiance
-- **ModA** (W/m²): Measurements from module/sensor A
-- **ModB** (W/m²): Measurements from module/sensor B
-- **Tamb** (°C): Ambient Temperature
-- **RH** (%): Relative Humidity
-- **WS** (m/s): Wind Speed
-- **WSgust** (m/s): Maximum Wind Gust Speed
-- **WSstdev** (m/s): Standard Deviation of Wind Speed
-- **WD** (°N): Wind Direction
-- **WDstdev**: Standard Deviation of Wind Direction
-- **BP** (hPa): Barometric Pressure
-- **Cleaning** (1 or 0): Cleaning event indicator
-- **Precipitation** (mm/min): Precipitation rate
-- **TModA** (°C): Temperature of Module A
-- **TModB** (°C): Temperature of Module B
-- **Comments**: Additional notes
+> :warning: **Data policy** – cleaned CSVs live under `data/` but are ignored in version control. Download/generate them locally before running notebooks or the dashboard.
+
+---
 
 ## Environment Setup
 
 ### Prerequisites
 
-- Python 3.11 or higher
+- Python 3.11+
 - Git
-- GitHub account
+- (Optional) Conda if you prefer managing environments that way
 
 ### Installation Steps
 
@@ -45,17 +48,96 @@ The data for this week's challenge is extracted and aggregated from Solar Radiat
    cd solar-challenge-week0
    ```
 
-2. **Create a virtual environment**
-
-   Using `venv`:
+2. **Create & activate a virtual environment**
 
    ```bash
-   python -m venv venv
+   python -m venv .venv
+   # Windows
+   .venv\Scripts\activate
+   # macOS / Linux
+   source .venv/bin/activate
    ```
 
-   Or using `conda`:
+   _(Alternatively, `conda create -n solar-challenge python=3.11` then `conda activate solar-challenge`.)_
+
+3. **Install dependencies**
 
    ```bash
-   conda create -n solar-challenge python=3.11
-   conda activate solar-challenge
+   pip install --upgrade pip
+   pip install -r requirements.txt
    ```
+
+4. **Optional: run CI check locally**
+   ```bash
+   pip install pre-commit
+   pre-commit run --all-files
+   ```
+
+---
+
+## Reproducing the Analysis
+
+1. **Prepare data** – place cleaned CSVs in the `data/` directory:
+
+   - `data/benin-malanville_clean.csv`
+   - `data/sierraleone-bumbuna_clean.csv`
+   - `data/togo_clean.csv`
+
+2. **Country EDA notebooks** – open each notebook under `notebooks/` and run all cells. They cover:
+
+   - Summary statistics & missing value audits
+   - Outlier detection (Z-score) and cleaning
+   - Time-series and seasonal patterns
+   - Cleaning impact on module output
+   - Correlation, scatter, and wind analyses
+   - Humidity vs. temperature/irradiance relationships
+
+3. **Cross-country comparison** – execute `notebooks/compare_countries.ipynb` to generate:
+
+   - Boxplots comparing GHI/DNI/DHI
+   - Aggregated mean/median/std table per metric
+   - ANOVA & Kruskal–Wallis p-values
+   - Ranked bar chart for average GHI
+   - Markdown summary of key findings
+
+## Streamlit Dashboard
+
+### Local Run
+
+```bash
+streamlit run app/main.py
+```
+
+Features:
+
+- Country multi-select with optional CSV uploads (for deployments without bundled data)
+- Metric selector (GHI/DNI/DHI/etc.)
+- Sampling toggle to keep the UI responsive
+- Boxplot visualisation, summary table (mean/median/std/p95), and top-region callout
+- Raw-data preview and usage tips
+
+### Deployment
+
+See `scripts/README.md` for Streamlit Community Cloud instructions, including how to upload CSVs and configure the entry point.
+
+### Dashboard Screenshot
+
+![Streamlit Dashboard](dashboard_screenshots/streamlit_dashboard.png)
+
+_(Screenshot depicts the dark-themed dashboard highlighting Benin’s lead in mean GHI and matching Togo’s distribution.)_
+
+---
+
+## Continuous Integration
+
+A lightweight GitHub Actions workflow (`.github/workflows/ci.yml`) runs on Pull Requests to confirm the environment installs successfully via `pip install -r requirements.txt` (extendable to tests later in the challenge).
+
+---
+
+## Acknowledgements
+
+- Week 0 tutorial facilitators and mentors
+- Solar radiation dataset providers
+- 10 Academy community for support and discussions
+
+For questions or improvements, open an issue or submit a PR. Happy analysing! 🌞
