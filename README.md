@@ -122,7 +122,9 @@ See `scripts/README.md` for Streamlit Community Cloud instructions, including ho
 
 ### Dashboard Screenshot
 
-![Streamlit Dashboard](dashboard_screenshots/streamlit_dashboard.png)
+![Streamlit Dashboard](images/dashboard1.png)
+![Streamlit Dashboard](images/dashboard2.png)
+![Streamlit Dashboard](images/dashboard3.png)
 
 _(Screenshot depicts the dark-themed dashboard highlighting Benin’s lead in mean GHI and matching Togo’s distribution.)_
 
