@@ -120,9 +120,9 @@ Features:
 
 See `scripts/README.md` for Streamlit Community Cloud instructions, including how to upload CSVs and configure the entry point.
 
-### Dashboard Screenshot
-
 [Visit Deployed Streamlit Dashboard](https://tihitna-22-solar-challenge-week0-appmain-dashboard-dev-v0wx8g.streamlit.app/)
+
+### Dashboard Screenshot
 
 ![Streamlit Dashboard](images/dashboard1.png)
 ![Streamlit Dashboard](images/dashboard2.png)
