@@ -122,6 +122,8 @@ See `scripts/README.md` for Streamlit Community Cloud instructions, including ho
 
 ### Dashboard Screenshot
 
+[Visit Deployed Streamlit Dashboard]([https://tihitna-22-solar-challenge-week0-appmain-dashboard-dev-v0wx8g.streamlit.app/])
+
 ![Streamlit Dashboard](images/dashboard1.png)
 ![Streamlit Dashboard](images/dashboard2.png)
 ![Streamlit Dashboard](images/dashboard3.png)
